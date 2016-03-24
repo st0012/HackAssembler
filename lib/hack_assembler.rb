@@ -53,9 +53,9 @@ class HackAssembler
     count = 16
     variables.each do |variable|
       var_name = variable.sub("@", "")
-      while symbol_table.table.values.include?(count.to_s) do
-        count += 1
-      end
+      # while symbol_table.table.values.include?(count.to_s) do
+      #   count += 1
+      # end
 
       symbol_table.push(var_name => count.to_s)
       count +=1
@@ -84,24 +84,24 @@ class HackAssembler
       f.read
     end.split("\n")
   end
+
+  def self.write_file(file_name)
+    lib_path = "#{File.expand_path(File.dirname(__FILE__))}/../../"
+    result = self.new.process(get_file(file_name))
+    store_name = file_name.split("/").last.split(".")[0]
+    file = File.new("#{lib_path}#{store_name}.hack", "w")
+    file.write(result)
+  end
 end
 
-assembler = HackAssembler.new
 file_names = [
   "add/Add.asm",
   "max/Max.asm",
-  "max/MaxL.asm",
   "pong/Pong.asm",
-  "pong/PongL.asm",
   "rect/Rect.asm",
-  "rect/RectL.asm"
 ]
-lib_path = "#{File.expand_path(File.dirname(__FILE__))}/../../"
 file_names.each do |file_name|
-  result = assembler.process(HackAssembler.get_file(file_name))
-  store_name = file_name.split("/").last.split(".")[0]
-  file = File.new("#{lib_path}#{store_name}.hack", "w")
-  file.write(result)
+  HackAssembler.write_file(file_name)
 end
 
 
