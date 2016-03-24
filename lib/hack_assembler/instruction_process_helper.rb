@@ -5,6 +5,7 @@ class HackAssembler
     C_INSTRUCTION = /[\+\-\=\;]+/
     SYMBOLED_A_INSTRUCTION = /^@\w+/
     LABEL_SYMBOL = /\(.*\)/
+    VARIABLE_SYMBOL = /^@[a-zA-Z]+/
 
     def remove_comments(line)
       line.gsub(COMMENT, '').strip
@@ -30,6 +31,11 @@ class HackAssembler
       else
         false
       end
+    end
+
+    def variable_symbol?(line)
+      var_name = line.sub("@", "")
+      line.match(VARIABLE_SYMBOL) && !symbol_table.table.keys.include?(var_name)
     end
 
     def transfer_symboled_a_instruction(line, index)

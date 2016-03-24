@@ -27,14 +27,12 @@ class HackAssembler
   end
 
   def transfer_symboled_a_instructions(codes)
-    index = -1
-    codes.map do |line|
-      index += 1
+    codes.map.with_index do |line, index|
       transfer_symboled_a_instruction(line, index)
     end
   end
 
-  def store_label_symbols(codes)
+  def store_and_remove_label_symbols(codes)
     index = -1
     codes.map do |line|
       index += 1
@@ -48,18 +46,26 @@ class HackAssembler
     end.compact
   end
 
-#   def transfer_pseudo_commands(codes)
-#     index = -1
-#     codes.map do |line|
-#       index += 1
-#       transfer_pseudo_command(line, index)
-#     end
-#   end
+  def store_variable_symbols(codes)
+    variables = codes.select do |line|
+      variable_symbol?(line)
+    end.uniq
+    count = 16
+    variables.each do |variable|
+      var_name = variable.sub("@", "")
+      while symbol_table.table.values.include?(count.to_s) do
+        count += 1
+      end
+
+      symbol_table.push(var_name => count.to_s)
+      count +=1
+    end
+  end
 
   def process(codes)
     codes = clean_comments_and_white_spaces(codes)
-    codes = store_label_symbols(codes)
-    # codes = transfer_pseudo_commands(codes)
+    codes = store_and_remove_label_symbols(codes)
+    store_variable_symbols(codes)
     codes = transfer_a_instructions(codes)
     codes = transfer_symboled_a_instructions(codes)
     codes = transfer_a_instructions(codes)
@@ -81,9 +87,21 @@ class HackAssembler
 end
 
 assembler = HackAssembler.new
-result = assembler.process(HackAssembler.get_file(ARGV[0]))
+file_names = [
+  "add/Add.asm",
+  "max/Max.asm",
+  "max/MaxL.asm",
+  "pong/Pong.asm",
+  "pong/PongL.asm",
+  "rect/Rect.asm",
+  "rect/RectL.asm"
+]
+lib_path = "#{File.expand_path(File.dirname(__FILE__))}/../../"
+file_names.each do |file_name|
+  result = assembler.process(HackAssembler.get_file(file_name))
+  store_name = file_name.split("/").last.split(".")[0]
+  file = File.new("#{lib_path}#{store_name}.hack", "w")
+  file.write(result)
+end
 
-puts result
-ARGV.clear
 
-binding.pry
