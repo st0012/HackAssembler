@@ -1,4 +1,5 @@
 require "hack_assembler/version"
+require "hack_assembler/instruction_table"
 require "hack_assembler/instruction_process_helper"
 require "pry"
 
@@ -12,15 +13,22 @@ class HackAssembler
     end.compact
   end
 
-  def convert_a_instructions(codes)
+  def transfer_a_instructions(codes)
     codes.map do |line|
       transfer_a_intruction(line)
     end
   end
 
+  def transfer_c_instructions(codes)
+    codes.map do |line|
+      transfer_c_instruction(line)
+    end
+  end
+
   def process(file)
     codes = clean_comments_and_white_spaces(file)
-    codes = convert_a_instructions(codes)
+    codes = transfer_a_instructions(codes)
+    codes = transfer_c_instructions(codes)
   end
 
   def self.get_file(file_name)
@@ -31,6 +39,6 @@ class HackAssembler
 end
 
 assembler = HackAssembler.new
-assembler.process(HackAssembler.get_file(ARGV[0]))
+result = assembler.process(HackAssembler.get_file(ARGV[0]))
 
-
+binding.pry
