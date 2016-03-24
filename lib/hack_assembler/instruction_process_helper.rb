@@ -1,8 +1,10 @@
 class HackAssembler
   module InstructionProcessHelper
     COMMENT = /\/\/.*/
-    A_INSTRUCTION = /^@\d*/
+    A_INSTRUCTION = /^@\d+/
     C_INSTRUCTION = /[\+\-\=\;]+/
+    SYMBOLED_A_INSTRUCTION = /^@\w+/
+    LABEL_SYMBOL = /\(.*\)/
 
     def remove_comments(line)
       line.gsub(COMMENT, '').strip
@@ -15,6 +17,26 @@ class HackAssembler
         a_instruction = match[0]
         a_instruction.sub!("@", "")
         a_instuction_to_bin(a_instruction)
+      else
+        line
+      end
+    end
+
+    def store_label_symbol?(line, index)
+      if match = line.match(LABEL_SYMBOL)
+        symbol = match[0].gsub(/\(|\)/, "")
+        symbol_table.push(symbol => index.to_s)
+        true
+      else
+        false
+      end
+    end
+
+    def transfer_symboled_a_instruction(line, index)
+      if match = line.match(SYMBOLED_A_INSTRUCTION)
+        symbol = match[0].sub!("@", "")
+        decimal_value = symbol_table[symbol]
+        "@#{decimal_value}"
       else
         line
       end
