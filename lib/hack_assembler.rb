@@ -29,6 +29,7 @@ class HackAssembler
     codes = clean_comments_and_white_spaces(file)
     codes = transfer_a_instructions(codes)
     codes = transfer_c_instructions(codes)
+    codes.join("\n")
   end
 
   def self.get_file(file_name)
@@ -41,4 +42,4 @@ end
 assembler = HackAssembler.new
 result = assembler.process(HackAssembler.get_file(ARGV[0]))
 
-binding.pry
+puts result
