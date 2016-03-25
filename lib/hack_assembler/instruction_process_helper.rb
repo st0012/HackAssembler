@@ -3,7 +3,7 @@ class HackAssembler
     COMMENT = /\/\/.*/
     A_INSTRUCTION = /^@\d+/
     C_INSTRUCTION = /[\+\-\=\;]+/
-    SYMBOLED_A_INSTRUCTION = /^@[\w+.]+/
+    SYMBOLED_A_INSTRUCTION = /^@[\w+.$]+/
     LABEL_SYMBOL = /\(.*\)/
     VARIABLE_SYMBOL = /^@[a-zA-Z]+/
 
@@ -16,7 +16,7 @@ class HackAssembler
 
       if match
         a_instruction = match[0]
-        a_instruction = a_instruction.sub("@", "")
+        a_instruction.sub!("@", "")
         a_instruction_to_bin(a_instruction)
       else
         line
@@ -38,7 +38,7 @@ class HackAssembler
       line.match(VARIABLE_SYMBOL) && !symbol_table.table.keys.include?(var_name)
     end
 
-    def transfer_symboled_a_instruction(line, index)
+    def transfer_symboled_a_instruction(line)
       if match = line.match(SYMBOLED_A_INSTRUCTION)
         symbol = match[0].sub("@", "")
         decimal_value = symbol_table[symbol]

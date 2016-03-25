@@ -27,8 +27,8 @@ class HackAssembler
   end
 
   def transfer_symboled_a_instructions(codes)
-    codes.map.with_index do |line, index|
-      transfer_symboled_a_instruction(line, index)
+    codes.map do |line|
+      transfer_symboled_a_instruction(line)
     end
   end
 
@@ -98,7 +98,7 @@ file_names = [
   "add/Add.asm",
   "max/Max.asm",
   "pong/Pong.asm",
-  "rect/Rect.asm",
+  "rect/Rect.asm"
 ]
 file_names.each do |file_name|
   HackAssembler.write_file(file_name)
